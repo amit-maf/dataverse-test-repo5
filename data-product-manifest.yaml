@@ -1,0 +1,56 @@
+---
+version: 0.0.1
+discoveryPort:
+  name: E2E test 10-01-23
+  description: A daliy updated product about CRF customer data. It consist of more
+    than 20M records integrated from 5 different sources
+  category: customer
+  image: "http://google.com"
+  autofillUserinfo: true
+  tags: []
+  extra: {}
+inputPorts:
+  - alias: usersS3_input_port
+    description: string
+    tags: []
+    extra: {}
+    syncType: pull
+    type: s3
+    sourceUrn: urn:dv:datasource:713e6921-ac91-4289-93d0-fa599488f150
+    entityId:
+      alias: usersS3
+      createEntity: true
+      type: s3-bucket
+      entityPath: s3a://dp-input-bucket/test/userdata1.parquet
+      entityFilterPatternMatch: "*"
+      sourceSchemaUrn: urn:dv:schema:9d4716d4
+      projectSchemaUrn: urn:dv:schema:9d4716d6
+      fileFormat: parquet
+      delimiter: "|"
+      filter: country = 'Brazil' and gender is not null and gender != ''
+      processingTimeColumn:
+        - processing_time
+      actualTimeColumn:
+        - processing_time
+      projection:
+        - gender
+stateManagement:
+  alias: users_count_by_gender
+  refreshInterval: 00 10 * * *
+  logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9}
+  retentionVersions: "10"
+  updateStrategy: SCD-2
+  productStoreState:
+    logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9}
+    retentionVersions: "10"
+  updateStrategyOptions:
+    - entityRef: ${urn:dv:datasource:6d4714c3}:1
+      uniqueKeyColumns:
+        - customer_id
+      changeTrackColumns:
+        - cust_title_desc
+        - cust_birthday
+        - cust_nationality
+transformation:
+  sql: select gender, count(gender) as gender_count from usersS3 group by gender
+    order by gender asc
