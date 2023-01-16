@@ -1,123 +1,59 @@
-# --- Data product definition template and documentation   --- #
+---
 version: 0.0.1
 discoveryPort:
-  name: CFR customer data LATEST
-  description: A daliy updated product about CRF customer data. It consist of more
-    than 20M records integrated from 5 different sources
+  name: Car prices barcelona CSV delimiter Test Multiple Entity
+  description: Test CSV file run
   category: customer
-  image: http://www.google.com
+  image: http://google.com
   autofillUserinfo: true
   tags: []
   extra: {}
 inputPorts:
-- alias: mafh-analytics-data-ingestion
-  description: string
-  tags: []
-  extra: {}
-  syncType: pull
-  type: s3
-  sourceUrn: urn:dv:datasource:36b5641a-720a-46d2-ac34-264af0e7eb25
-  entityId:
-    alias: customers
-    createEntity: true
-    refId: 1
-    type: s3-bucket
-    entityPath: s3a://mafh-analytics-data-ingestion/data-ingestion/prd/parsed/rtl_crf_dim_account/
-    entityFilterPatternMatch: "*"
-    sourceSchemaUrn:
-    projectSchemaUrn:
-    fileFormat: csv
-    delimiter: "|"
-    filter: active_flag=1
-    processingTimeColumn:
-    - processing_time
-    actualTimeColumn:
-    - processing_time
-    projection:
-    - customer_id
-    - cust_title_desc
-    - cust_birthday
-    - cust_nationality
-    - cust_email
-    - cust_addrs1
-    - cust_addrs2
-    - cust_addrs3
-    - cust_addrs4
-    - cust_addrs5
-    - cust_city
-    - cust_po_box
-    - cust_zipcode
-    - cust_country
-    - cust_landline
-    - cust_mobile
-    - cust_status_desc
-    - cust_gender_desc
-    - cust_job
-    - cust_call_flag
-    - cust_sms_flag
-    - cust_mms_flag
-    - cust_mail_flag
-    - cust_email_flag
-    - account_id
-    - account_status_key
-    - account_inactive_cause_key
-    - registration_channel
-    - cust_first_name
-    - cust_last_name
-    - country_key
-    - crf_account_hash_id
-    - crf_account_hash_scd
-    - processing_time
-    - file_name
+  - alias: car_input_port
+    description: string
+    tags: []
+    extra: {}
+    syncType: pull
+    type: s3
+    sourceUrn: urn:dv:datasource:713e6921-ac91-4289-93d0-fa599488f150
+    entityId:
+      alias: car_prices
+      createEntity: true
+      type: s3-bucket
+      entityPath: "s3a://dp-input-bucket/user_car_prices_barcelona_2022/"
+      entityFilterPatternMatch: "*"
+      sourceSchemaUrn: urn:dv:schema:9d4716d4
+      projectSchemaUrn: urn:dv:schema:9d4716d6
+      fileFormat: parquet
+      delimiter: "|"
+      header: true,
+      filter: brand = 'BMW'
+      processingTimeColumn:
+        - processing_time
+      actualTimeColumn:
+        - processing_time
+      projection:
+        - brand
+        - model
+        - engine
+        - year
+        - location
 stateManagement:
+  alias: car_prices_barcelona
   refreshInterval: 00 10 * * *
-  updateStrategy: SCD
-  updateStrategyOptions:
-  - entityRef: "${urn:dv:datasource:6d4714c3}:1"
-    uniqueKeyColumns:
-    - customer_id
-    changeTrackColumns:
-    - cust_title_desc
-    - cust_birthday
-    - cust_nationality
-    - cust_email
-    - cust_addrs1
-    - cust_addrs2
-    - cust_city
-    - cust_landline
-    - cust_mobile
-    - cust_sms_flag
-    - cust_mms_flag
-    - account_id
-    - account_status_key
-    - cust_first_name
-    - cust_last_name
-    - country_key
+  logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9}
+  retentionVersions: "10"
+  updateStrategy: SCD-2
   productStoreState:
-    logicalSchemaUrn: "${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9}"
-    retentionVersions: '10'
+    logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9}
+    retentionVersions: "10"
+  updateStrategyOptions:
+    - entityRef: ${urn:dv:datasource:6d4714c3}:1
+      uniqueKeyColumns:
+        - customer_id
+      changeTrackColumns:
+        - cust_title_desc
+        - cust_birthday
+        - cust_nationality
 transformation:
-  sql: select 'CRF' as source, customer_id, date_format(cust_birthday, 'yyyy-MM-dd')
-    as dateOfBirth, coalesce(cust_nationality,'') as nationality, coalesce(cust_mobile,'')
-    as `phone:String`,coalesce(cust_landline,'') as `landline:String`,cust_status_desc
-    as `status:String`,coalesce(cust_gender_desc,'') as `gender:String`,coalesce(cust_email,'')
-    `email:String`,registration_channel as `acquisition_channel:String`, '{street:'
-    || coalesce(cust_addrs1,'') || '^^' || coalesce(cust_addrs2,'') || '^^' || coalesce(cust_addrs3,'')
-    || '^^' || coalesce(cust_addrs4,'') || '^^' || coalesce(cust_addrs5,'') || ',city:'
-    || coalesce(cust_city,'') || ',po_box:' || coalesce(cust_po_box,'') || ', zipcode:'
-    || coalesce(cust_zipcode,'') || ', country:' || coalesce(cust_country,'') ||  '}'
-    `address:String`,coalesce(cust_first_name,'') || ' ' || coalesce(cust_last_name,'')
-    as `customerName:String`,'' as `customerAge:String`,processing_time from customers
-controlPort:
-  dataQualityRules: []
-  businessMetrics: {}
-  slo: {}
-  tags: []
-  extra: {}
-outputPort:
-- alias: string
-  queryType: string
-  slo: {}
-  tags: []
-  extra: {}
-# --- end -- #
+  sql: select * from car_prices
