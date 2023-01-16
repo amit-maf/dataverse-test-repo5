@@ -1,7 +1,7 @@
 ---
 version: 0.0.1
 discoveryPort:
-  name: Car prices barcelona CSV delimiter Test Multiple Entity
+  name: Car prices barcelona CSV delimiter Test Multiple Entity 1
   description: Test CSV file run
   category: customer
   image: http://google.com
