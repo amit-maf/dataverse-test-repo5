@@ -15,7 +15,7 @@ inputPorts:
     extra: {}
     syncType: pull
     type: s3
-    sourceUrn: urn:dv:datasource:a82aebc9-22e1-49fe-ab69-4a9deaddbb31
+    sourceUrn: urn:dv:datasource:a82aebc9-22e1-49fe-ab69-4a9deaddbb30
     entityId:
       alias: car_prices
       createEntity: true
@@ -41,11 +41,11 @@ inputPorts:
 stateManagement:
   alias: car_prices_barcelona
   refreshInterval: 00 10 * * *
-  logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9}
+  logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b0}
   retentionVersions: "10"
   updateStrategy: SCD-2
   productStoreState:
-    logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9}
+    logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b0}
     retentionVersions: "10"
   updateStrategyOptions:
     - entityRef: ${urn:dv:datasource:6d4714c3}:1
