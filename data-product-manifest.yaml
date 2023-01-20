@@ -15,7 +15,7 @@ inputPorts:
     extra: {}
     syncType: pull
     type: s3
-    sourceUrn: urn:dv:datasource:8f78c9c5-73f4-43fd-8521-e31d09ceef2z
+    sourceUrn: urn:dv:datasource:8f78c9c5-73f4-43fd-8521-e31d09ceef2d
     entityId:
       alias: car_prices
       createEntity: true
@@ -45,7 +45,7 @@ stateManagement:
   retentionVersions: "10"
   updateStrategy: SCD-2
   productStoreState:
-    logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9}
+    logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b0}
     retentionVersions: "10"
   updateStrategyOptions:
     - entityRef: ${urn:dv:datasource:6d4714c3}:1
