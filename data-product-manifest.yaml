@@ -1,7 +1,7 @@
 ---
 version: 0.0.1
 discoveryPort:
-  name: Data Product Append method
+  name: Data Product - Link to source
   description: Creating the base table
   category: customer
   image: http://google.com
