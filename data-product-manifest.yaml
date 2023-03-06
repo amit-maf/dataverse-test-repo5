@@ -1,8 +1,9 @@
 ---
 version: 0.0.1
 discoveryPort:
-  name: Data Product - run immediate and schedule failure test
-  description: Creating the base table
+  name: Data Product run request failure
+  description: The data product provides average house rental rates in Madrid by house
+    type (Pisos, Aticos, Duplex, etc)
   category: customer
   image: http://google.com
   autofillUserinfo: true
@@ -11,67 +12,55 @@ discoveryPort:
     - House Rental
   extra: {}
 inputPorts:
-  - alias: Test0001_input_port
+  - alias: usersS3_input_port
     description: string
     tags: []
     extra: {}
     syncType: pull
     type: s3
-    sourceUrn: urn:dv:datasource:1e401b2b-cdb7-4a82-98cd-5784f4568c9b
+    sourceUrn: urn:dv:datasource:a7ea4b35-4537-4a77-b189-949a3d723ed9
     entityId:
-      alias: Test0001
+      alias: usersS3
       createEntity: true
-      entityName: test_scd2.csv
+      entityName: houses_Madrid.parquet
       type: s3-bucket
-      entityPath: s3://dataverse-byte/sample-data/inputData/test_scd2.csv
-      entityFilterPatternMatch: "*.csv"
+      entityPath: s3a://dp-input-bucket/property_rental/houses_Madrid.parquet
+      entityFilterPatternMatch: "*"
       sourceSchemaUrn: urn:dv:schema:9d4716d4
       projectSchemaUrn: urn:dv:schema:9d4716d6
-      fileFormat: csv
-      delimiter: ","
-      header: true
-      filter: ""
+      fileFormat: parquet
+      delimiter: "|"
+      filter: subtitle != ''
       processingTimeColumn:
-        - created_date
+        - processing_time
       actualTimeColumn:
-        - created_date
+        - processing_time
       projection:
         - id
-        - name
-        - marks
-        - modified
+        - title
+        - subtitle
+        - sq_mt_built
+        - sq_mt_useful
+        - rent_price
+        - rent_price_by_area
+        - buy_price
+        - buy_price_by_area
 stateManagement:
-  alias: Test0001
+  alias: users_count_by_gender
   refreshInterval: "*/2 * * * *"
-  updateStrategy: append
+  updateStrategy: SCD-2
   productStoreState:
-    logicalSchema:
-      type: object
-      properties:
-        id:
-          type: number
-          description: ID of the property
-        name:
-          type: String
-        marks:
-          type: number
-        modified:
-          type: datetime
-          description: To store the creation date
-      required:
-        - id
+    logicalSchemaUrn: urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b9
     retentionVersions: "10"
   updateStrategyOptions:
+    - entityRef: ${urn:dv:datasource:6d4714c3}:1
       uniqueKeyColumns:
-        - id
+        - customer_id
       changeTrackColumns:
-        - modified
+        - cust_title_desc
+        - cust_birthday
+        - cust_nationality
 transformation:
-  sql: SELECT * FROM Test0001
-outputPort:
-  channels:
-    - channelType: REST-API
-      queryType: SQL
-    - channelType: JDBC
-      queryType: SQL
-  
+  sql: SELECT AVG(rent_price), house_type_id
+    FROM usersS3
+    GROUP BY house_type_id
