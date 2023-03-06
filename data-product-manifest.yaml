@@ -1,7 +1,7 @@
 ---
 version: 0.0.1
 discoveryPort:
-  name: Data Product Schedule Failure
+  name: Data Product Append method
   description: Creating the base table
   category: customer
   image: http://google.com
@@ -17,7 +17,7 @@ inputPorts:
     extra: {}
     syncType: pull
     type: s3
-    sourceUrn: urn:dv:datasource:944de782-4602-4e3e-8fba-974b88d2639f
+    sourceUrn: urn:dv:datasource:cb8dd9ee-aa35-477b-8258-4af1241165d4
     entityId:
       alias: Test0001
       createEntity: true
@@ -42,7 +42,7 @@ inputPorts:
         - modified
 stateManagement:
   alias: Test0001
-  refreshInterval: "45 67 * * *"
+  refreshInterval: 45 15 * * *
   updateStrategy: append
   productStoreState:
     logicalSchema:
@@ -67,7 +67,7 @@ stateManagement:
       changeTrackColumns:
         - modified
 transformation:
-  sql: SELECT * FROM Test0002
+  sql: SELECT * FROM Test0001
 outputPort:
   channels:
     - channelType: REST-API
