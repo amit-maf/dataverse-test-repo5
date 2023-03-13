@@ -1,7 +1,7 @@
 ---
 version: 0.0.1
 discoveryPort:
-  name: Data Product - Link to source
+  name: Data Product (Link to source)
   description: Creating the base table
   category: customer
   image: http://google.com
@@ -56,7 +56,7 @@ stateManagement:
         marks:
           type: number
         modified:
-          type: datetime
+          type: string
           description: To store the creation date
       required:
         - id
