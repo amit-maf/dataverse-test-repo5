@@ -1,59 +1,79 @@
 ---
 version: 0.0.1
 discoveryPort:
-  name: Car prices barcelona CSV delimiter Test Multiple Entity 2
-  description: Test CSV file run
+  name: Data Product test edit flow
+  description: Creating the base table
   category: customer
   image: http://google.com
   autofillUserinfo: true
-  tags: []
+  tags:
+    - Madrid
+    - House Rental
   extra: {}
 inputPorts:
-  - alias: car_input_port
+  - alias: Test0001_input_port
     description: string
     tags: []
     extra: {}
     syncType: pull
     type: s3
-    sourceUrn: urn:dv:datasource:a82aebc9-22e1-49fe-ab69-4a9deaddbb30
+    sourceUrn: urn:dv:datasource:1e401b2b-cdb7-4a82-98cd-5784f4568c9
     entityId:
-      alias: car_prices
+      alias: Test0001
       createEntity: true
+      entityName: test_scd2.csv
       type: s3-bucket
-      entityPath: "s3a://dp-input-bucket/user_car_prices_barcelona_2022/"
-      entityFilterPatternMatch: "*"
+      entityPath: s3://dataverse-byte/sample-data/inputData/test_scd2.csv
+      entityFilterPatternMatch: "*.csv"
       sourceSchemaUrn: urn:dv:schema:9d4716d4
       projectSchemaUrn: urn:dv:schema:9d4716d6
-      fileFormat: parquet
-      delimiter: "|"
-      header: true,
-      filter: brand = 'BMW'
+      fileFormat: csv
+      delimiter: ","
+      header: true
+      filter: ""
       processingTimeColumn:
-        - processing_time
+        - created_date
       actualTimeColumn:
-        - processing_time
+        - created_date
       projection:
-        - brand
-        - model
-        - engine
-        - year
-        - location
+        - id
+        - name
+        - marks
+        - modified
 stateManagement:
-  alias: car_prices_barcelona
-  refreshInterval: 00 10 * * *
-  logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b0}
-  retentionVersions: "10"
-  updateStrategy: SCD-2
+  alias: Test0001
+  refreshInterval: 0/15 * * * *
+  updateStrategy: append
   productStoreState:
-    logicalSchemaUrn: ${urn:dv:schema:263deedb-916b-40f2-9740-6ee02ce9b8b0}
+    logicalSchema:
+      type: object
+      properties:
+        id:
+          type: number
+          description: ID of the property
+        name:
+          type: String
+        subject:
+          type: String
+        marks:
+          type: number
+        modified:
+          type: string
+          description: To store the creation date
+      required:
+        - id
     retentionVersions: "10"
   updateStrategyOptions:
-    - entityRef: ${urn:dv:datasource:6d4714c3}:1
       uniqueKeyColumns:
-        - customer_id
+        - id
       changeTrackColumns:
-        - cust_title_desc
-        - cust_birthday
-        - cust_nationality
+        - modified
 transformation:
-  sql: select * from car_prices
+  sql: SELECT * FROM Test0001
+outputPort:
+  channels:
+    - channelType: REST-API
+      queryType: SQL
+    - channelType: JDBC
+      queryType: SQL
+  
